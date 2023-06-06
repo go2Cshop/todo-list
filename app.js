@@ -3,6 +3,8 @@ const mongoose = require('mongoose')
 
 const exphbs = require('express-handlebars')
 
+const Todo = require('./models/todo')
+
 const app = express()
 
 // 加入這段 code, 僅在非正式環境時, 使用 dotenv
@@ -25,7 +27,10 @@ app.engine('hbs', exphbs({ defaultlayout: 'main', extname: '.hbs' }))
 app.set('view engine', 'hbs')
 
 app.get('/', (req, res) => {
-  res.render('index')
+  Todo.find()
+    .lean()
+    .then(todos => res.render('index', { todos }))
+    .catch(erroe => console.error(error))
 })
 
 app.listen(3000, () => {

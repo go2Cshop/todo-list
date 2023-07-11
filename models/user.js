@@ -15,7 +15,7 @@ const userSchema = new Schema({
   },
   createAt: {
     type: Date,
-    default: Date.now
+    default: Date.now //伺服器將註冊資料送給資料庫時
   }
 })
 

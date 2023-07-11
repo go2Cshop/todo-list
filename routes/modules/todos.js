@@ -13,9 +13,14 @@ router.post('/', (req, res) => {
     return todo.save()
   */
   //法１
-  return Todo.create({ name })
-    .then(() => res.redirect('/'))
-    .catch(error => console.error(error))
+  if (name) {
+    return Todo.create({ name })
+      .then(() => res.redirect('/'))
+      .catch(error => console.error(error))
+  } else {
+    res.redirect('/todos/new')
+  }
+
 })
 
 router.get('/:id', (req, res) => {

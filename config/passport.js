@@ -1,22 +1,27 @@
 const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy
+const bcrypt = require('bcryptjs')
+
 const User = require('../models/user')
+
 module.exports = app => {
   // 初始化 Passport 模組
   app.use(passport.initialize())
   app.use(passport.session())
+
   // 設定本地登入策略
-  //把驗證項目從預設的 username 改成 email
   passport.use(new LocalStrategy({ usernameField: 'email', passReqToCallback: true }, (req, email, password, done) => {
     User.findOne({ email })
       .then(user => {
         if (!user) {
           return done(null, false, req.flash('warning_msg', 'That email is not registered!'))
         }
-        if (user.password !== password) {
-          return done(null, false, req.flash('warning_msg', 'Email or Password incorrect.'))
-        }
-        return done(null, user)
+        return bcrypt.compare(password, user.password).then(isMatch => {
+          if (!isMatch) {
+            return done(null, false, req.flash('warning_msg', 'Email or Password incorrect.'))
+          }
+          return done(null, user)
+        })
       })
       .catch(err => done(err, false))
   }))
